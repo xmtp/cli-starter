@@ -26,10 +26,6 @@ const getClient = (env: ClientOptions['env']) => {
   return Client.create(wallet, { env })
 }
 
-const printMessage = (message: DecodedMessage) => {
-  console.log(console.log(`[${message.senderAddress}]: ${message.content}`))
-}
-
 yargs(hideBin(process.argv))
   .command(
     'send <address> <message>',
