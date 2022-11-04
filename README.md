@@ -117,15 +117,22 @@ render(<MessageList title={title} messages={messages} />)
 The completed command will look like:
 
 ```ts
-const { address, env } = argv
-const client = await Client.create(loadWallet(), { env })
-const conversation = await client.conversations.newConversation(address)
-const messages = await conversation.messages()
-const title = `Messages between ${truncateEthAddress(
-  client.address
-)} and ${truncateEthAddress(conversation.peerAddress)}`
+.command(
+    'list-messages <address>',
+    'List all messages from an address',
+    { address: { type: 'string', demand: true } },
+    async (argv: any) => {
+        const { env, address } = argv
+        const client = await Client.create(loadWallet(), { env })
+        const conversation = await client.conversations.newConversation(address)
+        const messages = await conversation.messages()
+        const title = `Messages between ${truncateEthAddress(
+            client.address
+        )} and ${truncateEthAddress(conversation.peerAddress)}`
 
-render(<MessageList title={title} messages={messages} />)
+        render(<MessageList title={title} messages={messages} />)
+    }
+)
 ```
 
 ### Stream all messages
