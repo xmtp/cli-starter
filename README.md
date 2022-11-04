@@ -18,9 +18,9 @@ Starter kit for building a XMTP CLI
 
 ### Tools we will be using
 
-- xmtp-js
-- yargs
-- ink
+- [xmtp-js](https://github.com/xmtp/xmtp-js) for interacting with the XMTP network
+- [yargs](https://www.npmjs.com/package/yargs) for command line parsing
+- [ink](https://www.npmjs.com/package/ink) for rendering the CLI using React components
 
 ## Challenges
 
