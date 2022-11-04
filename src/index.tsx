@@ -55,7 +55,7 @@ yargs(hideBin(process.argv))
     }
   )
   .command(
-    'stream',
+    'stream-all',
     'Stream messages coming from any address',
     async (argv: any) => {
       const { env } = argv

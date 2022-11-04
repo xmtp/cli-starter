@@ -144,7 +144,7 @@ The starter command in `index.tsx` should look like
 
 ```ts
   .command(
-    'stream <address>',
+    'stream-all',
     'Stream messages from any address',
     {},
     async (argv: any) => {
