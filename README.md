@@ -96,6 +96,7 @@ The next command we are going to implement is `list-messages`. The starter looks
 Load the Client the same as before, and then load the conversation with the supplied address
 
 ```ts
+const { address, env } = argv
 const client = await Client.create(loadWallet(), { env })
 const convo = await client.conversations.newConversation(address)
 ```
