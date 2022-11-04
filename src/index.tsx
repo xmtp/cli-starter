@@ -1,10 +1,15 @@
 import React from 'react'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { Client, ClientOptions, SortDirection } from '@xmtp/xmtp-js'
-import { render } from 'ink'
+import { Client, ClientOptions } from '@xmtp/xmtp-js'
+import { render, Text } from 'ink'
 import { MessageList, MessageStream, Message } from './renderers'
-import { loadWallet, truncateEthAddress } from './utils'
+import {
+  loadWallet,
+  saveRandomWallet,
+  truncateEthAddress,
+  WALLET_FILE_LOCATION,
+} from './utils'
 
 const getClient = (env: ClientOptions['env']) => {
   const wallet = loadWallet()
@@ -13,8 +18,15 @@ const getClient = (env: ClientOptions['env']) => {
 
 yargs(hideBin(process.argv))
   .command('init', 'Initialize wallet', {}, async (argv: any) => {
-    const client = await getClient(argv.env)
-    console.log('Your wallet address is', client.address)
+    const { env } = argv
+    saveRandomWallet()
+    const client = await Client.create(loadWallet(), { env })
+
+    render(
+      <Text>
+        New wallet with address {client.address} saved at {WALLET_FILE_LOCATION}
+      </Text>
+    )
   })
   .command(
     'send <address> <message>',
@@ -51,7 +63,8 @@ yargs(hideBin(process.argv))
     'stream',
     'Stream messages coming from any address',
     async (argv: any) => {
-      const client = await getClient(argv.env)
+      const { env } = argv
+      const client = await Client.create(loadWallet(), { env })
       const stream = await client.conversations.streamAllMessages()
 
       render(<MessageStream stream={stream} title="Streaming messages" />)
@@ -59,11 +72,12 @@ yargs(hideBin(process.argv))
   )
   .command(
     'stream <address>',
-    'Stream messages from a particular address',
+    'Stream messages from an address',
     { address: { type: 'string', demand: true } },
     async (argv: any) => {
-      const client = await getClient(argv.env)
-      const convo = await client.conversations.newConversation(argv.address)
+      const { address, env } = argv
+      const client = await Client.create(loadWallet(), { env })
+      const convo = await client.conversations.newConversation(address)
       const stream = await convo.streamMessages()
 
       render(

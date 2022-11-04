@@ -2,6 +2,8 @@
 
 Starter kit for building a XMTP CLI
 
+## What is XMTP
+
 ## Setup
 
 ### Prerequisites
@@ -11,8 +13,8 @@ Starter kit for building a XMTP CLI
 ### Installation
 
 1. `npm i` in this folder
-2. (optional) `npm link` will allow you to run the `xmtp` command from anywhere, if your global `node_modules/.bin` folder is in the PATH of your system
-3. Ensure that installation succeeded by running `./xmtp --help`
+2. Ensure that installation succeeded by running `./xmtp --help`
+3. Initialize with a random wallet by running `./xmtp init`
 
 ### Tools we will be using
 
@@ -126,3 +128,100 @@ const title = `Messages between ${truncateEthAddress(
 
 render(<MessageList title={title} messages={messages} />)
 ```
+
+### Stream all messages
+
+To stream messages from an address, we'll want to use a stateful React component. This will require doing some work in the command, as well as the Ink component
+
+The starter command in `index.tsx` should look like
+
+```ts
+  .command(
+    'stream <address>',
+    'Stream messages from any address',
+    {},
+    async (argv: any) => {
+      throw new Error('BUILD ME')
+    }
+  )
+```
+
+There is also a starter React component that looks like this:
+
+```ts
+export const MessageStream = ({ stream, title }: MessageStreamProps) => {
+  const [messages, setMessages] = useState<DecodedMessage[]>([])
+
+  return <MessageList title={title} messages={messages} />
+}
+```
+
+First, we will want to get a message Stream, which is just an Async Iterable.
+
+```ts
+const { env } = argv
+const client = await Client.create(loadWallet(), { env })
+const stream = await client.conversations.streamAllMessages()
+```
+
+Then we will pass that stream to the component with something like
+
+```ts
+render(<MessageStream stream={stream} title={`Streaming all messages`} />)
+```
+
+Update the Ink component to listen to the stream and update the state as new messages come in.
+
+We can accomplish that with a `useEffect` hook that pulls from the Async Iterable and updates the state each time a message comes in.
+
+You'll want to keep track of seen messages, as duplicates are possible in a short time window.
+
+```ts
+useEffect(() => {
+  if (!stream) {
+    return
+  }
+  // Keep track of all seen messages.
+  // Would be more performant to keep this to a limited buffer of the most recent 5 messages
+  const seenMessages = new Set<string>()
+
+  const listenForMessages = async () => {
+    for await (const message of stream) {
+      if (seenMessages.has(message.id)) {
+        continue
+      }
+      // Add the message to the existing array
+      setMessages((existing) => existing.concat(message))
+      seenMessages.add(message.id)
+    }
+  }
+
+  listenForMessages()
+
+  // When unmounting, always remember to close the stream
+  return () => {
+    if (stream) {
+      stream.return(undefined)
+    }
+  }
+}, [stream, setMessages])
+```
+
+### Listen for messages from a single address
+
+The starter for this command should look like:
+
+```ts
+  .command(
+    'stream <address>',
+    'Stream messages from an address',
+    { address: { type: 'string', demand: true } },
+    async (argv: any) => {
+      throw new Error('BUILD ME')
+    }
+  )
+```
+
+You can implement this challenge by combining what you learned from listing all messages in a conversation and rendering a message stream.
+
+Hint: You can get a message stream from a `Conversation` by using the method `conversation.stream()`
