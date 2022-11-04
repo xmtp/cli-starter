@@ -8,7 +8,7 @@ Starter kit for building a XMTP CLI
 
 ### Prerequisites
 
-- Node.js version 16.7
+- Node.js version >16.7
 
 ### Installation
 
