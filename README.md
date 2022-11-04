@@ -11,6 +11,7 @@ Starter project for building an XMTP CLI
 ### Installation
 
 1. `npm i` in this folder
+2. build the project with `npm run build`
 2. Ensure that installation succeeded by running `./xmtp --help`
 3. Initialize with a random wallet by running `./xmtp init`
 
