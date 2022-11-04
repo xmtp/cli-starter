@@ -35,18 +35,16 @@ yargs(hideBin(process.argv))
     'list-messages <address>',
     'List all messages from an address',
     { address: { type: 'string', demand: true } },
-    async (argv) => {
-      const client = await getClient(argv.env as ClientOptions['env'])
-      const convo = await client.conversations.newConversation(argv.address)
-      const messages = await convo.messages()
-      render(
-        <MessageList
-          title={`Messages between ${truncateEthAddress(
-            client.address
-          )} and ${truncateEthAddress(convo.peerAddress)}`}
-          messages={messages}
-        />
-      )
+    async (argv: any) => {
+      const { env, address } = argv
+      const client = await Client.create(loadWallet(), { env })
+      const conversation = await client.conversations.newConversation(address)
+      const messages = await conversation.messages()
+      const title = `Messages between ${truncateEthAddress(
+        client.address
+      )} and ${truncateEthAddress(conversation.peerAddress)}`
+
+      render(<MessageList title={title} messages={messages} />)
     }
   )
   .command(
