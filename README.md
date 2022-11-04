@@ -1,8 +1,6 @@
 # cli-starter
 
-Starter kit for building a XMTP CLI
-
-## What is XMTP
+Starter project for building an XMTP CLI
 
 ## Setup
 
