@@ -53,29 +53,5 @@ type MessageStreamProps = {
 export const MessageStream = ({ stream, title }: MessageStreamProps) => {
   const [messages, setMessages] = useState<DecodedMessage[]>([])
 
-  useEffect(() => {
-    if (!stream) {
-      return
-    }
-    const seenMessages = new Set<string>()
-    const listenForMessages = async () => {
-      for await (const message of stream) {
-        if (seenMessages.has(message.id)) {
-          continue
-        }
-        setMessages((existing) => existing.concat(message))
-        seenMessages.add(message.id)
-      }
-    }
-
-    listenForMessages()
-
-    return () => {
-      if (stream) {
-        stream.return(undefined)
-      }
-    }
-  }, [stream])
-
   return <MessageList title={title} messages={messages} />
 }
