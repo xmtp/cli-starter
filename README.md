@@ -119,8 +119,9 @@ render(<MessageList title={title} messages={messages} />)
 The completed command will look like:
 
 ```ts
-const client = await getClient(argv.env as ClientOptions['env'])
-const conversation = await client.conversations.newConversation(argv.address)
+const { address, env } = argv
+const client = await Client.create(loadWallet(), { env })
+const conversation = await client.conversations.newConversation(address)
 const messages = await conversation.messages()
 const title = `Messages between ${truncateEthAddress(
   client.address
