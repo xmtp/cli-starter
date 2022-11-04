@@ -78,6 +78,12 @@ So, putting it all together the command will look like:
   )
 ```
 
+#### Verify it works
+
+```bash
+./xmtp send 0xF8cd371Ae43e1A6a9bafBB4FD48707607D24aE43 "Hello world"
+```
+
 ### List all messages from an address
 
 The next command we are going to implement is `list-messages`. The starter looks like
@@ -134,6 +140,12 @@ The completed command will look like:
         render(<MessageList title={title} messages={messages} />)
     }
 )
+```
+
+#### Verify it works
+
+```bash
+./xmtp list-messages 0xF8cd371Ae43e1A6a9bafBB4FD48707607D24aE43
 ```
 
 ### Stream all messages
@@ -214,6 +226,12 @@ useEffect(() => {
 }, [stream, setMessages])
 ```
 
+#### Verify it works
+
+```bash
+./xmtp stream-all
+```
+
 ### Listen for messages from a single address
 
 The starter for this command should look like:
@@ -233,6 +251,12 @@ You can implement this challenge by combining what you learned from listing all 
 
 Hint: You can get a message stream from a `Conversation` by using the method `conversation.stream()`
 
+#### Verify it works
+
+```bash
+./xmtp stream 0xF8cd371Ae43e1A6a9bafBB4FD48707607D24aE43
+```
+
 ### Proper key management
 
 All the examples thus far have been using a randomly generated wallet and a private key stored in a file on disk. It would be better if we could use this with any existing wallet, and if we weren't touching private keys at all.
@@ -240,5 +264,3 @@ All the examples thus far have been using a randomly generated wallet and a priv
 With a simple webpage that uses Wagmi, Web3Modal, or any other library that returns an `ethers.Signer` you can export XMTP-specific keys and store those on the user's machine.
 
 The command to export keys is `Client.getKeys(wallet, { env })`.
-
-Once
