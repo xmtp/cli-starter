@@ -1,7 +1,7 @@
 import React from 'react'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
-import { Client, ClientOptions } from '@xmtp/xmtp-js'
+import { Client } from '@xmtp/xmtp-js'
 import { render, Text } from 'ink'
 import { MessageList, MessageStream, Message } from './renderers'
 import {
@@ -10,11 +10,6 @@ import {
   truncateEthAddress,
   WALLET_FILE_LOCATION,
 } from './utils'
-
-const getClient = (env: ClientOptions['env']) => {
-  const wallet = loadWallet()
-  return Client.create(wallet, { env })
-}
 
 yargs(hideBin(process.argv))
   .command('init', 'Initialize wallet', {}, async (argv: any) => {
