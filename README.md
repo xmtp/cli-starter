@@ -11,8 +11,9 @@ Starter project for building an XMTP CLI
 ### Installation
 
 1. `npm i` in this folder
-2. Ensure that installation succeeded by running `./xmtp --help`
-3. Initialize with a random wallet by running `./xmtp init`
+2. Run `npm run watch` in your terminal, and leave it running as you complete this exercise
+3. Ensure that installation succeeded by running `./xmtp --help` in another terminal window
+4. Initialize with a random wallet by running `./xmtp init`
 
 ### Tools we will be using
 
@@ -176,7 +177,7 @@ Then we will pass that stream to the component with something like
 render(<MessageStream stream={stream} title={`Streaming all messages`} />)
 ```
 
-Update the `MessageStream` React component to listen to the stream and update the state as new messages come in.
+Update the `MessageStream` React component in `renderers.tsx` to listen to the stream and update the state as new messages come in.
 
 We can accomplish that with a `useEffect` hook that pulls from the Async Iterable and updates the state each time a message comes in.
 
@@ -231,3 +232,13 @@ The starter for this command should look like:
 You can implement this challenge by combining what you learned from listing all messages in a conversation and rendering a message stream.
 
 Hint: You can get a message stream from a `Conversation` by using the method `conversation.stream()`
+
+### Proper key management
+
+All the examples thus far have been using a randomly generated wallet and a private key stored in a file on disk. It would be better if we could use this with any existing wallet, and if we weren't touching private keys at all.
+
+With a simple webpage that uses Wagmi, Web3Modal, or any other library that returns an `ethers.Signer` you can export XMTP-specific keys and store those on the user's machine.
+
+The command to export keys is `Client.getKeys(wallet, { env })`.
+
+Once
