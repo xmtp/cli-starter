@@ -57,6 +57,7 @@ yargs(hideBin(process.argv))
   .command(
     'stream-all',
     'Stream messages coming from any address',
+    {},
     async (argv: any) => {
       const { env } = argv
       const client = await Client.create(loadWallet(), { env })
