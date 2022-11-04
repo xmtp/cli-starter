@@ -45,6 +45,7 @@ yargs(hideBin(process.argv))
   .command(
     'stream-all',
     'Stream messages coming from any address',
+    {},
     async (argv: any) => {
       throw new Error('BUILD ME')
     }
