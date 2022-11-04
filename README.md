@@ -171,7 +171,7 @@ Then we will pass that stream to the component with something like
 render(<MessageStream stream={stream} title={`Streaming all messages`} />)
 ```
 
-Update the Ink component to listen to the stream and update the state as new messages come in.
+Update the `MessageStream` React component to listen to the stream and update the state as new messages come in.
 
 We can accomplish that with a `useEffect` hook that pulls from the Async Iterable and updates the state each time a message comes in.
 
