@@ -6,7 +6,7 @@ Starter project for building an XMTP CLI
 
 ### Prerequisites
 
-- Node.js version >16.7
+- Node.js version >16.17
 
 ### Installation
 
@@ -102,6 +102,7 @@ The next command we are going to implement is `list-messages`. The starter looks
 Load the Client the same as before, and then load the conversation with the supplied address
 
 ```ts
+const { env, message, address } = argv
 const client = await Client.create(loadWallet(), { env })
 const convo = await client.conversations.newConversation(address)
 ```
