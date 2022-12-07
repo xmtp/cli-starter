@@ -88,7 +88,7 @@ yargs(hideBin(process.argv))
     alias: 'e',
     type: 'string',
     default: 'dev',
-    choices: ['dev', 'production'] as const,
+    choices: ['dev', 'production', 'local'] as const,
     description: 'The XMTP environment to use',
   })
   .demandCommand(1)
