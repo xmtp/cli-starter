@@ -10,6 +10,8 @@ import {
   truncateEthAddress,
   WALLET_FILE_LOCATION,
 } from './utils'
+import { randomBytes } from 'crypto'
+import { Wallet } from 'ethers'
 
 yargs(hideBin(process.argv))
   .command('init', 'Initialize wallet', {}, async (argv: any) => {
@@ -33,7 +35,10 @@ yargs(hideBin(process.argv))
     async (argv: any) => {
       const { env, message, address } = argv
       const client = await Client.create(loadWallet(), { env })
-      const conversation = await client.conversations.newConversation(address)
+      const conversation = await client.conversations.newConversation(address, {
+        conversationId: 'xmtp.org/foo',
+        metadata: {},
+      })
       const sent = await conversation.send(message)
       render(<Message {...sent} />)
     }
@@ -52,6 +57,21 @@ yargs(hideBin(process.argv))
       )} and ${truncateEthAddress(conversation.peerAddress)}`
 
       render(<MessageList title={title} messages={messages} />)
+    }
+  )
+  .command(
+    'list-conversations',
+    'List all conversations',
+    {},
+    async (argv: any) => {
+      const { env } = argv
+      const client = await Client.create(loadWallet(), { env })
+      const convos = await client.conversations.list()
+      for (const convo of convos) {
+        console.log(
+          `Address: ${convo.peerAddress}. Topic: ${convo.topic}. ID: ${convo.context?.conversationId}}`
+        )
+      }
     }
   )
   .command(
@@ -82,6 +102,46 @@ yargs(hideBin(process.argv))
           title={`Streaming messages from ${argv.address}`}
         />
       )
+    }
+  )
+  .command(
+    'perf <numMessages>',
+    'Send and receive a bunch of messages',
+    {},
+    async (argv: any) => {
+      const { env, numMessages } = argv
+      const client = await Client.create(loadWallet(), { env })
+      const tmpClient = await Client.create(Wallet.createRandom(), { env })
+      const convo = await tmpClient.conversations.newConversation(
+        client.address
+      )
+
+      for (let i = 0; i < numMessages; i++) {
+        const sent = await convo.send(`Message ${i + 1} ${randomBytes(512)}`)
+      }
+      const startTime = Date.now()
+      const messages = await convo.messages()
+      console.log(
+        `${messages.length} messages read in ${Date.now() - startTime}ms`
+      )
+    }
+  )
+  .command(
+    'seed <numConvos>',
+    'Create a bunch of Lens conversations',
+    { numConvos: { type: 'number', demand: true } },
+    async (argv: any) => {
+      const { env, numConvos } = argv
+      const client = await Client.create(loadWallet(), { env })
+      for (let i = 0; i < numConvos; i++) {
+        const wallet = Wallet.createRandom()
+        const tmpClient = await Client.create(wallet, { env })
+        console.log(`Created wallet ${i + 1}`)
+        tmpClient.conversations.newConversation(client.address, {
+          conversationId: `convo-${i}`,
+          metadata: {},
+        })
+      }
     }
   )
   .option('env', {
