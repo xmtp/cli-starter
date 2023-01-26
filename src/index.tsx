@@ -29,11 +29,15 @@ yargs(hideBin(process.argv))
     {
       address: { type: 'string', demand: true },
       message: { type: 'string', demand: true },
+      conversationId: { type: 'string', demand: false },
     },
     async (argv: any) => {
-      const { env, message, address } = argv
+      const { env, message, address, conversationId } = argv
       const client = await Client.create(loadWallet(), { env })
-      const conversation = await client.conversations.newConversation(address)
+      const conversation = await client.conversations.newConversation(address, {
+        conversationId,
+        metadata: {},
+      })
       const sent = await conversation.send(message)
       render(<Message {...sent} />)
     }
