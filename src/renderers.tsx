@@ -2,6 +2,8 @@ import React, { FC, useState, useEffect } from 'react'
 import { Box, render, Spacer, Text } from 'ink'
 import { DecodedMessage, Stream } from '@xmtp/xmtp-js'
 import { truncateEthAddress } from './utils'
+import Table from 'cli-table'
+
 
 export const Message = ({
   senderAddress,
@@ -36,6 +38,21 @@ export type VoodooMessage = {
 type MessagesProps = {
   messages: VoodooMessage[]
   title?: string
+}
+
+export const renderMessages = (messages: VoodooMessage[]) => {
+  const table = new Table({
+    head: ['Timestamp', 'Sender', 'Message'],
+    colWidths: [20, 50, 20],
+  })
+  messages.forEach((message) => {
+    table.push([
+      truncateEthAddress(message.senderAddress),
+      new Date(message.timestamp).toLocaleString(),
+      message.plaintext,
+    ])
+  })
+  return table.toString()
 }
 
 export const MessageList = ({ messages, title }: MessagesProps) => {

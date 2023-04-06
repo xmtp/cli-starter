@@ -3,7 +3,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { Client } from '@xmtp/xmtp-js'
 import { render, Text } from 'ink'
-import { MessageList, Message } from './renderers'
+import { MessageList, Message, renderMessages } from './renderers'
 import {
   loadWallet,
   saveRandomWallet,
@@ -45,6 +45,7 @@ const run = async () => {
       }
 
       await conversation.send(message)
+      console.log(renderMessages(await conversation.messages()))
     } else if (command === 'messages') {
       const [address] = args
       if (!address) {
@@ -58,7 +59,7 @@ const run = async () => {
         continue
       }
       const messages = await conversation.messages()
-      render(<MessageList messages={messages} />)
+      console.log(renderMessages(await conversation.messages()))
     } else if (command === 'exit') {
       process.exit(0)
     } else {

@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/xmtp/cli-starter#readme",
   "devDependencies": {
+    "@types/cli-table": "^0.3.1",
     "@types/node": "^18.11.7",
     "@types/react": "^18.0.24",
     "@types/yargs": "^17.0.13",
@@ -41,6 +42,7 @@
   },
   "dependencies": {
     "@xmtp/xmtp-js": "file:../xmtp-js/xmtp-xmtp-js-0.0.0-development.tgz",
+    "cli-table": "^0.3.11",
     "ethers": "^5.7.2",
     "ink": "^3.2.0",
     "react": "^17.0.2",
