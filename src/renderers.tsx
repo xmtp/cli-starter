@@ -4,27 +4,37 @@ import { DecodedMessage, Stream } from '@xmtp/xmtp-js'
 import { truncateEthAddress } from './utils'
 
 export const Message = ({
-  id,
   senderAddress,
-  content,
-  sent,
-}: DecodedMessage) => {
+  plaintext,
+  timestamp,
+}: VoodooMessage) => {
   return (
-    <Box flexDirection="row" key={id}>
+    <Box flexDirection="row" key={timestamp}>
       <Box marginRight={2}>
         <Text color="red">{truncateEthAddress(senderAddress)}: </Text>
-        <Text>{content}</Text>
+        <Text>{plaintext}</Text>
       </Box>
       <Spacer />
       <Text italic color="gray">
-        {sent.toLocaleString()}
+        {new Date(timestamp).toLocaleString()}
       </Text>
     </Box>
   )
 }
 
+// This should be exported from xmtp-js
+export type VoodooMessage = {
+  // All plaintext fields
+  senderAddress: string
+  timestamp: number
+  plaintext: string
+  // SessionId may be dropped in the future
+  sessionId: string
+}
+
+
 type MessagesProps = {
-  messages: DecodedMessage[]
+  messages: VoodooMessage[]
   title?: string
 }
 
@@ -34,7 +44,7 @@ export const MessageList = ({ messages, title }: MessagesProps) => {
       <Text bold>{title}</Text>
       <Box flexDirection="column" borderStyle="single">
         {messages && messages.length ? (
-          messages.map((message) => <Message {...message} key={message.id} />)
+          messages.map((message) => <Message {...message} key={message.timestamp} />)
         ) : (
           <Text color="red" bold>
             No messages
@@ -43,39 +53,4 @@ export const MessageList = ({ messages, title }: MessagesProps) => {
       </Box>
     </Box>
   )
-}
-
-type MessageStreamProps = {
-  stream: Stream<DecodedMessage> | AsyncGenerator<DecodedMessage>
-  title?: string
-}
-
-export const MessageStream = ({ stream, title }: MessageStreamProps) => {
-  const [messages, setMessages] = useState<DecodedMessage[]>([])
-
-  useEffect(() => {
-    if (!stream) {
-      return
-    }
-    const seenMessages = new Set<string>()
-    const listenForMessages = async () => {
-      for await (const message of stream) {
-        if (seenMessages.has(message.id)) {
-          continue
-        }
-        setMessages((existing) => existing.concat(message))
-        seenMessages.add(message.id)
-      }
-    }
-
-    listenForMessages()
-
-    return () => {
-      if (stream) {
-        stream.return(undefined)
-      }
-    }
-  }, [stream])
-
-  return <MessageList title={title} messages={messages} />
 }

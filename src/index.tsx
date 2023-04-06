@@ -3,7 +3,7 @@ import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { Client } from '@xmtp/xmtp-js'
 import { render, Text } from 'ink'
-import { MessageList, MessageStream, Message } from './renderers'
+import { MessageList, Message } from './renderers'
 import {
   loadWallet,
   saveRandomWallet,
@@ -11,15 +11,76 @@ import {
   WALLET_FILE_LOCATION,
 } from './utils'
 
+
+// Run an infinite loop, asking for commands: [send, messages, exit]
+const run = async () => {
+  await saveRandomWallet()
+  const client = await Client.createVoodoo(loadWallet(), {env: 'local'})
+  // Print address
+  console.log(`Your address is ${client.address}`)
+  while (true) {
+    console.log('Enter a command: [send, messages, exit]')
+    const input_raw: string = await new Promise((resolve) => {
+      process.stdin.once('data', (data) => {
+        resolve(data.toString().trim())
+      })
+    })
+
+    // Split input into command and args, parse as a shell command so group quotes etc
+    const parsed = input_raw.split(',')
+    const command = parsed[0]
+    const args = parsed.slice(1)
+    if (command === 'send') {
+      // Check if client.conversations has this conversation
+      const [address, message] = args
+      if (!address || !message) {
+        console.log('Invalid arguments')
+        continue
+      }
+      const conversations = await client.conversations.list()
+      let conversation = conversations.find((c: any) => c.peerAddress === address)
+      if (!conversation) {
+        console.log('Conversation not found, creating...')
+        conversation = await client.conversations.newConversation(address)
+      }
+
+      await conversation.send(message)
+    } else if (command === 'messages') {
+      const [address] = args
+      if (!address) {
+        console.log('Need address')
+        continue
+      }
+      const conversations = await client.conversations.list()
+      let conversation = conversations.find((c: any) => c.peerAddress === address)
+      if (!conversation) {
+        console.log('Conversation not found.')
+        continue
+      }
+      const messages = await conversation.messages()
+      render(<MessageList messages={messages} />)
+    } else if (command === 'exit') {
+      process.exit(0)
+    } else {
+      console.log('Usage: send|messages|stream|exit')
+    }
+  }
+}
+
+run()
+
+/*
 yargs(hideBin(process.argv))
   .command('init', 'Initialize wallet', {}, async (argv: any) => {
     const { env } = argv
     saveRandomWallet()
-    const client = await Client.create(loadWallet(), { env })
+    if (!cachedClient) {
+      cachedClient = await Client.createVoodoo(loadWallet(), {env})
+    }
 
     render(
       <Text>
-        New wallet with address {client.address} saved at {WALLET_FILE_LOCATION}
+        New wallet with address {cachedClient.address} saved at {WALLET_FILE_LOCATION}
       </Text>
     )
   })
@@ -33,8 +94,10 @@ yargs(hideBin(process.argv))
     },
     async (argv: any) => {
       const { env, message, address, conversationId } = argv
-      const client = await Client.create(loadWallet(), { env })
-      const conversation = await client.conversations.newConversation(address, {
+      if (!cachedClient) {
+        cachedClient = await Client.createVoodoo(loadWallet(), {env})
+      }
+      const conversation = await cachedClient.conversations.newConversation(address, {
         conversationId,
         metadata: {},
       })
@@ -97,3 +160,4 @@ yargs(hideBin(process.argv))
   })
   .demandCommand(1)
   .parse()
+*/
