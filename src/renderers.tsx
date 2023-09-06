@@ -1,14 +1,13 @@
-import React, { FC, useState, useEffect } from 'react'
-import { Box, render, Spacer, Text } from 'ink'
+import React, { useState, useEffect } from 'react'
+import { Box, Spacer, Text } from 'ink'
 import { DecodedMessage, Stream } from '@xmtp/xmtp-js'
-import { truncateEthAddress } from './utils'
+import { truncateEthAddress } from './utils.js'
 
 export const Message = ({
-  id,
-  senderAddress,
-  content,
-  sent,
-}: DecodedMessage) => {
+  msg: { id, senderAddress, content, sent },
+}: {
+  msg: DecodedMessage
+}) => {
   return (
     <Box flexDirection="row" key={id}>
       <Box marginRight={2}>
@@ -34,7 +33,7 @@ export const MessageList = ({ messages, title }: MessagesProps) => {
       <Text bold>{title}</Text>
       <Box flexDirection="column" borderStyle="single">
         {messages && messages.length ? (
-          messages.map((message) => <Message {...message} key={message.id} />)
+          messages.map((message) => <Message msg={message} key={message.id} />)
         ) : (
           <Text color="red" bold>
             No messages

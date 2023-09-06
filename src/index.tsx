@@ -1,15 +1,16 @@
+import './polyfills.js'
 import React from 'react'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { Client } from '@xmtp/xmtp-js'
 import { render, Text } from 'ink'
-import { MessageList, MessageStream, Message } from './renderers'
+import { MessageList, MessageStream, Message } from './renderers.js'
 import {
   loadWallet,
   saveRandomWallet,
   truncateEthAddress,
   WALLET_FILE_LOCATION,
-} from './utils'
+} from './utils.js'
 
 yargs(hideBin(process.argv))
   .command('init', 'Initialize wallet', {}, async (argv: any) => {
@@ -29,9 +30,14 @@ yargs(hideBin(process.argv))
     {
       address: { type: 'string', demand: true },
       message: { type: 'string', demand: true },
+      conversationId: { type: 'string', demand: false },
     },
     async (argv: any) => {
-      throw new Error('BUILD ME')
+      const { env, message, address, conversationId } = argv
+      const client = await Client.create(loadWallet(), { env })
+      const conversation = await client.conversations.newConversation(address)
+      const sent = await conversation.send(message)
+      render(<Message msg={sent} />)
     }
   )
   .command(
@@ -62,7 +68,7 @@ yargs(hideBin(process.argv))
     alias: 'e',
     type: 'string',
     default: 'dev',
-    choices: ['dev', 'production'] as const,
+    choices: ['dev', 'production', 'local'] as const,
     description: 'The XMTP environment to use',
   })
   .demandCommand(1)
