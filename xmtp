@@ -1,4 +1,3 @@
-#!/usr/bin/env node
-"use strict"
+#!/usr/bin/env sh
 
-require("./dist/index.js")
+node ./dist/index.js

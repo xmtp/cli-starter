@@ -1,15 +1,16 @@
+import './polyfills.js'
 import React from 'react'
 import yargs from 'yargs'
 import { hideBin } from 'yargs/helpers'
 import { Client } from '@xmtp/xmtp-js'
 import { render, Text } from 'ink'
-import { MessageList, MessageStream, Message } from './renderers'
+import { MessageList, MessageStream, Message } from './renderers.js'
 import {
   loadWallet,
   saveRandomWallet,
   truncateEthAddress,
   WALLET_FILE_LOCATION,
-} from './utils'
+} from './utils.js'
 
 yargs(hideBin(process.argv))
   .command('init', 'Initialize wallet', {}, async (argv: any) => {
@@ -34,12 +35,9 @@ yargs(hideBin(process.argv))
     async (argv: any) => {
       const { env, message, address, conversationId } = argv
       const client = await Client.create(loadWallet(), { env })
-      const conversation = await client.conversations.newConversation(address, {
-        conversationId,
-        metadata: {},
-      })
+      const conversation = await client.conversations.newConversation(address)
       const sent = await conversation.send(message)
-      render(<Message {...sent} />)
+      render(<Message msg={sent} />)
     }
   )
   .command(
