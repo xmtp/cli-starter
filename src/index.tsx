@@ -45,15 +45,7 @@ yargs(hideBin(process.argv))
     'List all messages from an address',
     { address: { type: 'string', demand: true } },
     async (argv: any) => {
-      const { env, address } = argv
-      const client = await Client.create(loadWallet(), { env })
-      const conversation = await client.conversations.newConversation(address)
-      const messages = await conversation.messages()
-      const title = `Messages between ${truncateEthAddress(
-        client.address
-      )} and ${truncateEthAddress(conversation.peerAddress)}`
-
-      render(<MessageList title={title} messages={messages} />)
+      throw new Error('BUILD ME')
     }
   )
   .command(
@@ -61,11 +53,7 @@ yargs(hideBin(process.argv))
     'Stream messages coming from any address',
     {},
     async (argv: any) => {
-      const { env } = argv
-      const client = await Client.create(loadWallet(), { env })
-      const stream = await client.conversations.streamAllMessages()
-
-      render(<MessageStream stream={stream} title="Streaming messages" />)
+      throw new Error('BUILD ME')
     }
   )
   .command(
@@ -73,17 +61,7 @@ yargs(hideBin(process.argv))
     'Stream messages from an address',
     { address: { type: 'string', demand: true } },
     async (argv: any) => {
-      const { address, env } = argv
-      const client = await Client.create(loadWallet(), { env })
-      const convo = await client.conversations.newConversation(address)
-      const stream = await convo.streamMessages()
-
-      render(
-        <MessageStream
-          stream={stream}
-          title={`Streaming messages from ${argv.address}`}
-        />
-      )
+      throw new Error('BUILD ME')
     }
   )
   .option('env', {
