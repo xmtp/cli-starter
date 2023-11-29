@@ -12,8 +12,8 @@ Starter project for building an XMTP CLI
 
 1. `npm i` in this folder
 2. Run `npm run watch` in your terminal, and leave it running as you complete this exercise
-3. Ensure that installation succeeded by running `./xmtp --help` in another terminal window
-4. Initialize with a random wallet by running `./xmtp init`
+3. Ensure that installation succeeded by running `xmtp --help` in another terminal window
+4. Initialize with a random wallet by running `xmtp init`
 
 ### Tools we will be using
 
