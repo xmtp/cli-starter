@@ -1,4 +1,4 @@
-# OBSOLETE: cli-starter
+# MOVED: cli-starter
 
 > **Important**  
 > `xmtp-bot-starter` has moved to the [`xmtp-node-js-tools`](https://github.com/xmtp/xmtp-node-js-tools) repo.
